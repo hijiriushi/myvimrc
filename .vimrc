@@ -29,6 +29,7 @@ Plugin 'tpope/vim-surround'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'w0rp/ale'
+Plugin 'mattn/emmet-vim'
 
 call vundle#end()
 
@@ -38,7 +39,7 @@ filetype plugin indent on
 " map-----------------------------------{{{
 
 " nnoremap-----------------------------------{{{
-let mapleader = ","
+let mapleader = "!"
 
 nnoremap 1 <C-a>
 nnoremap 2 <C-x>
@@ -51,20 +52,26 @@ nnoremap sh <C-w>h
 nnoremap sk <C-w>k
 nnoremap sj <C-w>j
 nnoremap sl <C-w>l
-
 nnoremap <F4> :terminal<cr>
 nnoremap <F8> :TagbarToggle<CR>
-nnoremap <F10> :NERDTree<cr>
+nnoremap <F10> :NERDTreeToggle<cr>
+nnoremap <F12> :Termdebug<cr>
 nnoremap <leader>ev :vsplit $MYVIMRC<cr>
 nnoremap <leader>sv :source $MYVIMRC<cr>
 
-nnoremap <leader>; A;<esc>
+nnoremap <leader>; mqA;<esc>'q
 nnoremap <leader>t I<tab><esc>
+nnoremap <leader>o o<esc>
+
 " }}}
 
 " inoremap-----------------------------------{{{
 inoremap jj <esc>
 inoremap <esc> <nop>
+" }}}
+
+" vnoremap-----------------------------------{{{
+vnoremap ff <esc>
 " }}}
 
 " onoremap-----------------------------------{{{
@@ -168,9 +175,55 @@ augroup END
 
 " }}}
 
+" grepoperator-----------------------------------{{{
+nnoremap <leader>g :set operatorfunc=<SID>GrepOperator<cr>g@
+vnoremap <leader>g :<c-u>call <SID>GrepOperator(visualmode())<cr>
+
+function! s:GrepOperator(type)
+
+	let saved_unnamed_register = @@
+
+	if a:type ==# 'v'
+		execute "normal! `<v`>y"
+	elseif a:type ==# 'char'
+		execute "normal! `[v`]y"
+	else
+		return
+	endif
+
+	silent execute "grep! -R " . shellescape(@@) . " ."
+	copen
+	redraw!
+
+	let @@ =  saved_unnamed_register
+endfunction
+" }}}
+
+" quickfixtoggle-----------------------------------{{{
+nnoremap <leader>q :call QuickfixToggle()<cr>
+
+let g:quickfix_is_open = 0
+
+function! QuickfixToggle()
+	if g:quickfix_is_open
+		cclose
+		let g:quickfix_is_open = 0
+		execute g:quickfix_return_to_window . "wincmd w"
+	else
+		let g:quickfix_return_to_window = winnr()
+		copen
+		let g:quickfix_is_open = 1
+	endif
+endfunction
+" }}}
+
 " Vimscript file settings ---------------{{{
 augroup filetype_vim
 	autocmd!
 	autocmd FileType vim setlocal foldmethod=marker
 augroup END
 " }}}
+
+packadd termdebug
+set mouse=a
+let g:termdebug_wide=163

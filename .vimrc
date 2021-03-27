@@ -1,3 +1,5 @@
+source ~/myvimrc/.color.vimrc
+
 " Vundle-----------------------------------{{{
 set nocompatible
 filetype off
@@ -30,6 +32,7 @@ Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
 Plugin 'w0rp/ale'
 Plugin 'mattn/emmet-vim'
+Plugin 'amiorin/vim-project'
 
 call vundle#end()
 
@@ -62,6 +65,8 @@ nnoremap <leader>sv :source $MYVIMRC<cr>
 nnoremap <leader>; mqA;<esc>'q
 nnoremap <leader>t I<tab><esc>
 nnoremap <leader>o o<esc>
+nnoremap <leader><tab> :bNext<esc>
+nnoremap <leader>= ggvG=
 
 " }}}
 
@@ -77,6 +82,10 @@ vnoremap ff <esc>
 " onoremap-----------------------------------{{{
 onoremap p :<c-u>normal! f)vi)<cr>
 onoremap q :<c-u>normal! f"vi"<cr>
+" }}}
+
+" tnoremap-----------------------------------{{{
+tnoremap <Esc> <c-\><c-n>:q!<cr>
 " }}}
 
 " }}}
@@ -125,12 +134,6 @@ set t_Co=256
 set rtp+=~/.fzf
 
 syntax on
-" }}}
-
-" color-----------------------------------{{{
-colorscheme iceberg
-
-hi Comment ctermfg=1
 " }}}
 
 " pluginSetting-----------------------------------{{{
@@ -224,6 +227,13 @@ augroup filetype_vim
 augroup END
 " }}}
 
+" termbug ---------------{{{
 packadd termdebug
 set mouse=a
 let g:termdebug_wide=163
+" }}}
+
+set foldmethod=manual
+
+set rtp+=~/.vim/bundle/vim-project/
+call project#rc()
